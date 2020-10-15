@@ -21,7 +21,7 @@ def parse_csv():
     events = glob.glob(os.path.join(events_path, '*.xlsx'))
     # Finally, parse all the excel files and place in a list
     attendanceData = [pd.read_excel(event) for event in events]
-    attendanceData.reverse()
+    #attendanceData.reverse()
     
     #Read in the events and members sheet
 
@@ -46,7 +46,8 @@ def check_attendance(name, meeting):
             EID_Lookup[attendee_name.lower()] = attendee["What's your EID?"].lower()
             eid = EID_Lookup.get(attendee_name.lower(), "NA")
         #If the name and EID located in the database matches the one from the event, return true
-        if attendee["What's your EID?"].lower() == EID_Lookup.get(name.lower(), "NA") and name.lower() == attendee_name.lower():
+        #attendee["What's your EID?"].lower() == EID_Lookup.get(name.lower(), "NA") and 
+        if name.lower() == attendee_name.lower():
             return True
     return False    
 
@@ -62,13 +63,15 @@ def parse_events(event_attendance, memberlist):
     #Go through all events in the folder and check if the person attended. If yes, add points
     for index, member in attendance.iterrows():
         for event in event_attendance:
+            
             eventdata = list(event.columns)
             event_name = eventdata[-1]
+            print(event_name)
             points_to_add = event.iat[0, len(eventdata)-1]
             attendance.at[index, event_name] = 0
             #If the person is in the database and at the meeting, sum up each person's spark points and add to their total
             if check_attendance(member["Name:"], event):
-                
+                    
                 attendance.at[index, event_name] += points_to_add
                 attendance.at[index, "Total Spark Points:"] += points_to_add
 
@@ -106,7 +109,7 @@ EVENTATTENDANCEDATA, MEMBERS, EVENTSLIST = parse_csv()
 
 # Calculate spark points for each due-paying member 💰💰💰
 
-EVENTSLIST, MEMBERS = parse_eventsList(EVENTSLIST, MEMBERS)
+EVENTSLIST, MEMBERS = parse_eventsAndMembers(EVENTSLIST, MEMBERS)
 EVENTATTENDANCEDATA = parse_events(EVENTATTENDANCEDATA, MEMBERS)
 # %%
 
