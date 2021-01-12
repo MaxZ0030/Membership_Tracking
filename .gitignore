@@ -1,3 +1,4 @@
 *.xlsx
 *.csv
 *masterListCreator - Backup.py
+*spark.py
